@@ -1,5 +1,3 @@
-<!-- resources/views/schedule/index.blade.php -->
-
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -84,6 +82,16 @@
             box-shadow: 0 4px 12px rgba(168, 85, 247, 0.4);
         }
 
+        /* Logout button animation */
+        .logout-button {
+            transition: all 0.3s ease;
+        }
+
+        .logout-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.4);
+        }
+
         /* Keyframe animations */
         @keyframes fadeIn {
             from {
@@ -140,8 +148,11 @@
     </style>
 </head>
 <body class="bg-gray-50 p-8">
-    <h1 class="page-title text-4xl font-bold text-center mb-12 text-gray-900">JADWAL PIKET PANAHAN HEXA</h1>
-    <a href="{{ route('login') }}" class="add-button bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition">Login</a>
+    <!-- Header dengan tombol logout -->
+    <div class="flex justify-center items-center mb-8">
+        <h1 class="page-title items-center text-4xl font-bold text-gray-900">JADWAL PIKET PANAHAN HEXA</h1>
+        
+    </div>
 
     <!-- Tab Navigation -->
     <div class="tab-container flex justify-center mb-10 gap-4">
@@ -166,7 +177,21 @@
     @endif
 
     <!-- Add Schedule Button -->
-   
+    <div class="flex justify-end mb-6 mx-auto max-w-4xl">
+        <a href="{{ route('schedule.create') }}" class="add-button bg-purple-500 text-white px-4 py-2 rounded hover:bg-purple-600 transition">
+            Tambah Jadwal
+        </a>
+
+        <form action="{{ route('logout') }}" method="POST" class="">
+            @csrf
+            <button type="submit" class="logout-button bg-red-500 text-white px-4 py-2 rounded ml-10 flex items-center hover:bg-red-600 transition">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+                </svg>
+                Logout
+            </button>
+        </form>
+    </div>
 
     <!-- Minggu Pertama Content -->
     <div id="minggu-pertama" class="week-container active">
@@ -183,7 +208,9 @@
                     <h3 class="text-lg font-bold text-purple-800">{{ $schedule->name }}</h3>
                 </div>
                 <p class="text-purple-700">{{ $schedule->day }}</p>
-                
+                <a href="{{ route('schedule.edit', $schedule->id) }}" class="text-sm text-blue-500 hover:underline mt-2 inline-block hover:text-blue-700 transition-colors">
+                    Sunting
+                </a>
             </div>
             @endforeach
         </div>
@@ -227,7 +254,9 @@
                     <h3 class="text-lg font-bold text-purple-800">{{ $schedule->name }}</h3>
                 </div>
                 <p class="text-purple-700">{{ $schedule->day }}</p>
-               
+                <a href="{{ route('schedule.edit', $schedule->id) }}" class="text-sm text-blue-500 hover:underline mt-2 inline-block hover:text-blue-700 transition-colors">
+                    Sunting
+                </a>
             </div>
             @endforeach
         </div>
@@ -248,9 +277,32 @@
                     <h3 class="text-lg font-bold text-purple-800">{{ $schedule->name }}</h3>
                 </div>
                 <p class="text-purple-700">{{ $schedule->day }}</p>
-               
+                <a href="{{ route('schedule.edit', $schedule->id) }}" class="text-sm text-blue-500 hover:underline mt-2 inline-block hover:text-blue-700 transition-colors">
+                    Sunting
+                </a>
             </div>
             @endforeach
+        </div>
+    </div>
+
+    
+
+    <!-- Modal untuk konfirmasi logout -->
+    <div id="logoutModal" class="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 hidden">
+        <div class="bg-white rounded-lg p-8 max-w-md w-full transform transition-all">
+            <h3 class="text-xl font-bold text-gray-900 mb-4">Konfirmasi Logout</h3>
+            <p class="text-gray-700 mb-6">Apakah Anda yakin ingin keluar dari aplikasi?</p>
+            <div class="flex justify-end space-x-4">
+                <button id="cancelLogout" class="px-4 py-2 bg-gray-300 text-gray-800 rounded hover:bg-gray-400 transition">
+                    Batal
+                </button>
+                <form action="{{ route('logout') }}" method="POST">
+                    @csrf
+                    <button type="submit" class="px-4 py-2 bg-red-500 text-white rounded hover:bg-red-600 transition">
+                        Ya, Logout
+                    </button>
+                </form>
+            </div>
         </div>
     </div>
 
@@ -291,6 +343,44 @@
                     card.style.opacity = '1';
                     card.style.transform = 'translateY(0)';
                 }, 100 + (index * 100));
+            });
+
+            // Logout functionality dengan konfirmasi modal
+            const logoutButton = document.querySelector('.logout-button');
+            const logoutModal = document.getElementById('logoutModal');
+            const cancelLogout = document.getElementById('cancelLogout');
+
+            if (logoutButton) {
+                logoutButton.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    logoutModal.classList.remove('hidden');
+                    // Tambahkan animasi fade in
+                    logoutModal.style.opacity = '0';
+                    setTimeout(() => {
+                        logoutModal.style.transition = 'opacity 0.3s ease';
+                        logoutModal.style.opacity = '1';
+                    }, 10);
+                });
+            }
+
+            if (cancelLogout) {
+                cancelLogout.addEventListener('click', function() {
+                    // Tambahkan animasi fade out
+                    logoutModal.style.opacity = '0';
+                    setTimeout(() => {
+                        logoutModal.classList.add('hidden');
+                    }, 300);
+                });
+            }
+
+            // Tutup modal ketika mengklik diluar modal
+            logoutModal.addEventListener('click', function(e) {
+                if (e.target === logoutModal) {
+                    logoutModal.style.opacity = '0';
+                    setTimeout(() => {
+                        logoutModal.classList.add('hidden');
+                    }, 300);
+                }
             });
         });
     </script>

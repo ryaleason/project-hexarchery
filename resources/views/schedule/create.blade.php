@@ -104,7 +104,7 @@
     <div class="form-container max-w-md mx-auto bg-white p-8 rounded-lg shadow-md">
         <h1 class="page-title text-2xl font-bold mb-6 text-purple-800">Tambah Jadwal Penerbangan</h1>
 
-        <form action="{{ route('schedule.store') }}" method="POST" class="space-y-4">
+        <form action="{{ route('schedule.submit') }}" method="POST" class="space-y-4">
             @csrf
             <div class="form-field" style="animation: slideIn 0.5s ease forwards 0.2s;">
                 <label class="block mb-1 font-medium text-gray-700">Nama</label>

@@ -13,6 +13,13 @@ class ScheduleController extends Controller
         return view('schedule.index', compact('schedules'));
     }
 
+    public function indexadmin()
+    {
+        $schedules = Schedule::all();
+        return view('admin.index', compact('schedules'));
+    }
+
+
     public function create()
     {
         return view('schedule.create');
